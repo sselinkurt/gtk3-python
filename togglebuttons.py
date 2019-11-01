@@ -1,9 +1,14 @@
+#!usr/bin/python3 
+#added counter button for number of trials
+
 import gi
 import random
 import time
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
+number_of_trial = 0
 
 class GridWindow(Gtk.Window):
 
@@ -22,11 +27,16 @@ class GridWindow(Gtk.Window):
         buttons = []
         counter1 = []
         countername1 = []
-
+        
+        counter_button = Gtk.Button("")
+        Gtk.Window.set_size_request(counter_button,40,40)
+   #     grid.attach(x, 0, 0, 1, 1)
+        grid.add(counter_button)
+    
         for j in range(36):
 
             button = Gtk.ToggleButton(label="")
-            Gtk.Window.set_size_request(button,50,50)
+            Gtk.Window.set_size_request(button,60,60)
             buttons.append(button)
 
             if(j<6):
@@ -38,7 +48,7 @@ class GridWindow(Gtk.Window):
             
             a = random.randint(0,len(labels)-1) 
             number = labels[a]
-            button.connect("toggled", self.on_button_toggled, str(number), counter1, countername1)
+            button.connect("toggled", self.on_button_toggled, str(number), counter1, countername1, counter_button)
             labels.remove(number)
 
     def updateGUI(self): #eventlerin devam etmesi(paralel calisma) icin tanimlanan fonksiyon
@@ -50,29 +60,37 @@ class GridWindow(Gtk.Window):
             time.sleep(sec/10.0)
             self.updateGUI()
 
-    def on_button_toggled(self, Button, name, counter, countername):
+    def on_button_toggled(self, Button, name, counter, countername, counter_button):
             
         if Button.get_active():
             Button.set_label(name)
             print(name)
+            #append counter/2
             counter.append(Button)
             countername.append(name)
             if(len(counter)%2==0):
                 self.wait(0.5) #0.5 saniye bekle
-                self.change(counter, countername)
+                self.change(counter, countername, counter_button)
         else:
              Button.set_label("")
          
         #import pdb
         #pdb.set_trace()
-
-    def change(self, array, labelarray):
+    
+    def change(self, array, labelarray, counter_button):
+        
+        global number_of_trial
+        
         if(labelarray[-2]==labelarray[-1]):
-            array[-1].set_label("ok")
-            array[-2].set_label("ok")
+            array[-1].set_sensitive(False)
+            array[-2].set_sensitive(False)
         else:
             array[-2].set_active(False)
             array[-1].set_active(False)
+            print("Number of trial:", number_of_trial)
+            number_of_trial += 1
+            counter_button.set_label(str(number_of_trial))
+            
         
 win = GridWindow()
 win.connect("destroy", Gtk.main_quit)
