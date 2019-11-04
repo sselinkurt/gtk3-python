@@ -14,35 +14,42 @@ class GridWindow(Gtk.Window):
 
     def __init__(self):
         Gtk.Window.__init__(self, title="Toggle Buttons")
-
+        
         grid = Gtk.Grid()
         self.set_border_width(100)
         self.add(grid)
+        
+        kare = 1
+        while(kare%2 != 0):
+            kare = int(input("Oynamak istediginiz kare sayisini(CIFT SAYI) giriniz: "))
+            print(kare)
 
         labels = []
-        for i in range(1,19):
+        for i in range(1, ((kare*kare//2)+1)):
             labels.append(i)
             labels.append(i)
         
         buttons = []
         counter1 = []
         countername1 = []
-        
-        counter_button = Gtk.Button("")
-        Gtk.Window.set_size_request(counter_button,40,40)
-   #     grid.attach(x, 0, 0, 1, 1)
-        grid.add(counter_button)
     
-        for j in range(36):
+        counter_button = Gtk.Button("Hamle Sayiniz: 0")
+        Gtk.Window.set_size_request(counter_button,40,40)
+        grid.attach(counter_button, -1, -1, 1, 1);
+
+        #grid.add(counter_button)
+
+        for j in range(kare**2):
 
             button = Gtk.ToggleButton(label="")
             Gtk.Window.set_size_request(button,60,60)
             buttons.append(button)
+            
 
-            if(j<6):
+            if(j<kare):
                 grid.add(buttons[j])
-            elif(j%6==0):
-                grid.attach_next_to(buttons[j], buttons[j-6], Gtk.PositionType.BOTTOM, 1, 1)
+            elif(j%kare==0):
+                grid.attach_next_to(buttons[j], buttons[j-kare], Gtk.PositionType.BOTTOM, 1, 1)
             else:
                 grid.attach_next_to(buttons[j], buttons[j-1], Gtk.PositionType.RIGHT, 1, 1)
             
@@ -50,6 +57,7 @@ class GridWindow(Gtk.Window):
             number = labels[a]
             button.connect("toggled", self.on_button_toggled, str(number), counter1, countername1, counter_button)
             labels.remove(number)
+        
 
     def updateGUI(self): #eventlerin devam etmesi(paralel calisma) icin tanimlanan fonksiyon
         while (Gtk.events_pending()):
@@ -89,7 +97,7 @@ class GridWindow(Gtk.Window):
             array[-1].set_active(False)
             print("Number of trial:", number_of_trial)
             number_of_trial += 1
-            counter_button.set_label(str(number_of_trial))
+            counter_button.set_label("Hamle Sayiniz: "+str(number_of_trial))
             
         
 win = GridWindow()
